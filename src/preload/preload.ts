@@ -11,27 +11,41 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Stage 3: MessagePort IPC for real-time data streaming
   // We handle MessagePort in preload and forward messages to renderer
   onDataPacket: (callback: (packet: any) => void) => {
+    let portInitialized = false;
+
     ipcRenderer.on('port', (event) => {
-      // Get the MessagePort from the event
-      if (!event.ports || event.ports.length === 0) {
-        console.error('No ports in event');
+      // Only initialize port once
+      if (portInitialized) {
         return;
       }
 
-      const port = event.ports[0];
-      if (port) {
-        console.log('MessagePort received in preload context');
-
-        // Set up message handler IN PRELOAD (before contextBridge)
-        port.onmessage = (messageEvent) => {
-          // Forward the data packet to renderer via callback
-          callback(messageEvent.data);
-        };
-
-        // Start the port to begin receiving messages
-        port.start();
-        console.log('MessagePort started in preload context, forwarding messages to renderer');
+      // Get the MessagePort from the event
+      const ports = (event as any).ports;
+      if (!ports || !Array.isArray(ports) || ports.length === 0) {
+        console.error('No ports in event or ports is not an array');
+        return;
       }
+
+      const port = ports[0];
+      if (!port) {
+        console.error('Port at index 0 is null or undefined');
+        return;
+      }
+
+      portInitialized = true;
+      console.log('MessagePort received in preload context');
+
+      // Set up message handler IN PRELOAD (before contextBridge)
+      port.onmessage = (messageEvent: MessageEvent) => {
+        // Forward the data packet to renderer via callback
+        if (messageEvent && messageEvent.data) {
+          callback(messageEvent.data);
+        }
+      };
+
+      // Start the port to begin receiving messages
+      port.start();
+      console.log('MessagePort started in preload context, forwarding messages to renderer');
     });
   },
 
