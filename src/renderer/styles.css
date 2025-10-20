@@ -234,3 +234,20 @@ main {
   color: #fbbf24;
   border-left: 3px solid #fbbf24;
 }
+
+/* FPS Color Indicators */
+.fps-indicator {
+  transition: color 0.3s ease;
+}
+
+.fps-good {
+  color: #10b981 !important; /* Green: FPS >= 55 */
+}
+
+.fps-warning {
+  color: #f59e0b !important; /* Orange: FPS 45-54 */
+}
+
+.fps-bad {
+  color: #ef4444 !important; /* Red: FPS < 45 */
+}
