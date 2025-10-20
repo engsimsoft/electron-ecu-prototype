@@ -20,13 +20,14 @@ contextBridge.exposeInMainWorld('electronAPI', {
         return;
       }
 
-      // TypeScript knows event.ports is MessagePort[] - no cast needed
-      if (!event.ports || event.ports.length === 0) {
-        console.error('No ports in event');
+      // Safe access to event.ports with optional chaining
+      const ports = (event as any).ports;
+      if (!ports?.length) {
+        console.error('No ports in event or ports array is empty');
         return;
       }
 
-      const port = event.ports[0];
+      const port = ports[0];
       if (!port) {
         console.error('Port at index 0 is null or undefined');
         return;
