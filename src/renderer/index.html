@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <title>ECU Data Prototype</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header>
+    <h1>ECU Data Prototype - 300 Parameters Stress Test</h1>
+    <p class="tech-info">Electron | TypeScript | uPlot</p>
+  </header>
+
+  <main>
+    <section class="control-panel">
+      <h2>Stage 2 Test: Data Generation</h2>
+      <div class="test-info">
+        <p><strong>Target:</strong> 25 packets/second (40ms interval)</p>
+        <p><strong>Duration:</strong> 10 seconds</p>
+        <p><strong>Expected packets:</strong> ~250</p>
+      </div>
+
+      <div class="test-status">
+        <h3>Test Status</h3>
+        <div id="test-output">
+          <p>Waiting for test to start...</p>
+        </div>
+      </div>
+
+      <div class="test-results" id="test-results" style="display: none;">
+        <h3>Test Results</h3>
+        <div id="results-output"></div>
+      </div>
+    </section>
+  </main>
+
+  <script src="renderer.js"></script>
+</body>
+</html>

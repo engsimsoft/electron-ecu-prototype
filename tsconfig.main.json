@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "lib": ["ES2020"],
+    "outDir": "./dist/main",
+    "rootDir": "./src/main"
+  },
+  "include": ["src/main/**/*"]
+}

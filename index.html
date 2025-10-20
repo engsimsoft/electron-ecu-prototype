@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'">
+  <title>ECU Data Prototype</title>
+  <link rel="stylesheet" href="/src/renderer/styles.css">
+</head>
+<body>
+  <header>
+    <h1>ECU Data Prototype - 300 Parameters Stress Test</h1>
+    <p class="tech-info">Electron | TypeScript | uPlot</p>
+  </header>
+
+  <main>
+    <section class="control-panel">
+      <h2>Stage 3: MessagePort IPC Communication</h2>
+
+      <div class="controls">
+        <button id="start-btn" class="btn btn-start">Start Simulation</button>
+        <button id="stop-btn" class="btn btn-stop" disabled>Stop Simulation</button>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <span class="metric-label">Packets Received:</span>
+          <span id="packets-received" class="metric-value">0</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Dropped Packets:</span>
+          <span id="packets-dropped" class="metric-value">0 (0.00%)</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Avg Latency:</span>
+          <span id="avg-latency" class="metric-value">0.00ms</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Uptime:</span>
+          <span id="uptime" class="metric-value">00:00</span>
+        </div>
+      </div>
+
+      <div class="info">
+        <p><strong>Test Parameters:</strong></p>
+        <ul>
+          <li>Packet interval: 40ms (25 Hz)</li>
+          <li>Parameters per packet: 300</li>
+          <li>Data format: Float64Array</li>
+          <li>IPC: MessagePort</li>
+        </ul>
+        <p class="note">Open DevTools Console (Cmd+Option+I) to see detailed logs</p>
+      </div>
+    </section>
+  </main>
+
+  <script type="module" src="/src/renderer/renderer.ts"></script>
+</body>
+</html>
