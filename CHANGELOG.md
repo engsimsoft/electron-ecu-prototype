@@ -8,11 +8,79 @@
 ## [Unreleased]
 
 ### Planned
-- Этап 4: UI и Control Panel (частично реализован)
-- Этап 5: Графики с uPlot (3 charts)
+- Этап 5: Графики с uPlot - КРИТИЧЕСКАЯ ПРОБЛЕМА (MessagePort `event.ports` undefined)
 - Этап 6: Performance Logging с Pino
 - Этап 7: Тестирование и оптимизация (5 минут, 15 минут тесты)
 - Windows/Linux тестирование
+
+### Known Issues
+- 🚨 **CRITICAL:** MessagePort `event.ports` undefined в preload script
+  - Ошибка: `Cannot read properties of undefined (reading 'length')` на VM114_preload.js:31
+  - Блокирует отображение графиков uPlot
+  - Попытки решения: очистка кэшей, optional chaining, type casting - НЕ помогли
+  - Требуется свежий подход в новом чате
+
+---
+
+## [0.4.0] - 2025-10-21 (In Progress)
+
+### Added
+- **FPS Monitoring система** (Этап 4)
+  - FPSMonitor класс с методами tick(), getFPS(), reset()
+  - Rendering loop с requestAnimationFrame @ 60 FPS target
+  - FPS метрика в UI с цветовой индикацией:
+    - Зеленый (≥55 FPS): `fps-good`
+    - Оранжевый (45-54 FPS): `fps-warning`
+    - Красный (<45 FPS): `fps-bad`
+  - Файл: `src/renderer/renderer.ts`
+
+- **uPlot chart library интеграция** (Этап 5 - частично)
+  - Установлен uPlot v1.6.30+
+  - ChartManager класс для управления 3 графиками
+  - CircularBuffer и TypedCircularBuffer классы для данных
+  - HTML/CSS для 3 графиков (Parameters 0-2, 3-5, 6-8)
+  - Файлы: `src/renderer/chart-manager.ts`, `src/renderer/circular-buffer.ts`
+
+- **UI улучшения**
+  - Uptime counter в формате MM:SS
+  - Render time tracking (для debugging)
+  - GPU acceleration через CSS (`transform: translateZ(0)`)
+
+### Changed
+- **Метрики UI:** Добавлена FPS метрика, реорганизована grid (2x3)
+- **CSP Policy:** Добавлен `style-src 'self' 'unsafe-inline'` для uPlot inline styles
+- **Timing:** Увеличен delay для MessagePort setup с 50ms до 100ms
+
+### Fixed
+- Попытки исправить MessagePort `event.ports` undefined:
+  - Добавлен null check для `event.ports`
+  - Применён optional chaining (`ports?.length`)
+  - Убраны лишние type castings
+  - Очищены все кэши (.vite, node_modules/.vite, out) множество раз
+
+### Performance
+**Этап 4 Test Results:**
+- ✅ **FPS:** 60-61 stable (зелёный индикатор)
+- ✅ **Latency:** 0.27-0.42ms (стабильно низкая)
+- ✅ **Dropped packets:** 0 (0.00%)
+- ✅ **UI responsiveness:** Отличная, кнопки реагируют мгновенно
+
+### Status
+- ✅ **Этап 4 завершен:** UI и Control Panel с FPS monitoring
+- 🔧 **Этап 5 в процессе:** Графики uPlot - БЛОКИРОВАНО критической проблемой
+- **Прогресс:** 26/40 задач (65%)
+
+### Blocking Issues
+- 🚨 **MessagePort event.ports undefined**
+  - Графики не отображаются из-за ошибки в preload
+  - Main process успешно отправляет port
+  - Preload получает событие 'port', но event.ports === undefined
+  - Все пакеты генерируют ошибку в консоли
+
+### Next Steps
+- **Приоритет 1:** Решить проблему MessagePort в preload (требуется свежий подход)
+- **Приоритет 2:** Завершить Этап 5 (графики должны отображаться и обновляться)
+- **Приоритет 3:** Перейти к Этапу 6 (Performance Logging)
 
 ---
 
