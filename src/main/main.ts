@@ -66,10 +66,10 @@ function createWindow(): void {
     trySetupMessagePort();
   });
 
-  // Backup: try on did-finish-load
+  // Backup: try on did-finish-load (with delay to ensure preload has executed)
   win.webContents.once('did-finish-load', () => {
     console.log('[Main] did-finish-load event fired');
-    setTimeout(trySetupMessagePort, 50);
+    setTimeout(trySetupMessagePort, 100); // Increased delay to ensure preload is ready
   });
 }
 

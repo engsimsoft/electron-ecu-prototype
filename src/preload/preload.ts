@@ -9,24 +9,24 @@ contextBridge.exposeInMainWorld('electronAPI', {
   },
 
   // Stage 3: MessagePort IPC for real-time data streaming
-  // We handle MessagePort in preload and forward messages to renderer
+  // Official Electron pattern: https://www.electronjs.org/docs/latest/tutorial/message-ports
   onDataPacket: (callback: (packet: any) => void) => {
     let portInitialized = false;
 
     ipcRenderer.on('port', (event) => {
       // Only initialize port once
       if (portInitialized) {
+        console.log('Port already initialized, ignoring duplicate event');
         return;
       }
 
-      // Get the MessagePort from the event
-      const ports = (event as any).ports;
-      if (!ports || !Array.isArray(ports) || ports.length === 0) {
-        console.error('No ports in event or ports is not an array');
+      // TypeScript knows event.ports is MessagePort[] - no cast needed
+      if (!event.ports || event.ports.length === 0) {
+        console.error('No ports in event');
         return;
       }
 
-      const port = ports[0];
+      const port = event.ports[0];
       if (!port) {
         console.error('Port at index 0 is null or undefined');
         return;
@@ -35,7 +35,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
       portInitialized = true;
       console.log('MessagePort received in preload context');
 
-      // Set up message handler IN PRELOAD (before contextBridge)
+      // Set up message handler with web-style API
       port.onmessage = (messageEvent: MessageEvent) => {
         // Forward the data packet to renderer via callback
         if (messageEvent && messageEvent.data) {
@@ -43,7 +43,7 @@ contextBridge.exposeInMainWorld('electronAPI', {
         }
       };
 
-      // Start the port to begin receiving messages
+      // CRITICAL: Start the port to begin receiving messages
       port.start();
       console.log('MessagePort started in preload context, forwarding messages to renderer');
     });
