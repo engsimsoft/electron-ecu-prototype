@@ -13,6 +13,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   onDataPacket: (callback: (packet: any) => void) => {
     ipcRenderer.on('port', (event) => {
       // Get the MessagePort from the event
+      if (!event.ports || event.ports.length === 0) {
+        console.error('No ports in event');
+        return;
+      }
+
       const port = event.ports[0];
       if (port) {
         console.log('MessagePort received in preload context');
