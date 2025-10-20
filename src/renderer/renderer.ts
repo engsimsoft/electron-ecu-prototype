@@ -3,6 +3,11 @@
 // Import types
 import type { DataPacket } from '../main/types';
 
+// Import uPlot (Stage 5)
+import uPlot from 'uplot';
+import 'uplot/dist/uPlot.min.css';
+import { ChartManager } from './chart-manager';
+
 /**
  * FPSMonitor class - tracks frames per second
  * Stage 4: UI and Control Panel
@@ -67,6 +72,9 @@ const MAX_LATENCY_SAMPLES = 100; // Keep last 100 latencies for averaging
 // FPS Monitoring (Stage 4)
 const fpsMonitor = new FPSMonitor();
 
+// Chart Management (Stage 5)
+let chartManager: ChartManager | null = null;
+
 /**
  * Handle incoming data packet
  */
@@ -91,6 +99,33 @@ function handleDataPacket(packet: DataPacket): void {
     latencies.shift(); // Remove oldest
   }
 
+  // Add data to charts (Stage 5)
+  if (chartManager && packet.data.length >= 9) {
+    // Calculate timestamp in seconds from start
+    const timestampSeconds = (Date.now() - startTime) / 1000;
+
+    // Chart 1: Parameters 0-2
+    chartManager.addDataPoint(0, timestampSeconds, [
+      packet.data[0],
+      packet.data[1],
+      packet.data[2]
+    ]);
+
+    // Chart 2: Parameters 3-5
+    chartManager.addDataPoint(1, timestampSeconds, [
+      packet.data[3],
+      packet.data[4],
+      packet.data[5]
+    ]);
+
+    // Chart 3: Parameters 6-8
+    chartManager.addDataPoint(2, timestampSeconds, [
+      packet.data[6],
+      packet.data[7],
+      packet.data[8]
+    ]);
+  }
+
   // Log every 100th packet
   if (receivedCount % 100 === 0) {
     const avgLatency = latencies.reduce((a, b) => a + b, 0) / latencies.length;
@@ -103,7 +138,7 @@ function handleDataPacket(packet: DataPacket): void {
     );
   }
 
-  // Update UI (will be implemented in Stage 4)
+  // Update UI stats (Stage 4)
   updateStats();
 }
 
@@ -172,10 +207,16 @@ function startSimulation(): void {
   lastSequenceNumber = -1;
   droppedPackets = 0;
   latencies = [];
+  renderTimes = [];
   startTime = Date.now();
 
   // Reset FPS monitor
   fpsMonitor.reset();
+
+  // Clear charts (Stage 5)
+  if (chartManager) {
+    chartManager.clear();
+  }
 
   // Send command to main process
   window.electronAPI.startSimulation();
@@ -266,16 +307,34 @@ document.addEventListener('DOMContentLoaded', () => {
   // Initialize button states
   updateButtonStates();
 
+  // Initialize charts (Stage 5)
+  const chart1 = document.getElementById('chart-1') as HTMLElement;
+  const chart2 = document.getElementById('chart-2') as HTMLElement;
+  const chart3 = document.getElementById('chart-3') as HTMLElement;
+
+  if (chart1 && chart2 && chart3) {
+    console.log('Initializing ChartManager...');
+    chartManager = new ChartManager([chart1, chart2, chart3]);
+    console.log('ChartManager initialized successfully');
+  } else {
+    console.error('Chart containers not found!');
+  }
+
   console.log('UI setup complete');
 });
 
 /**
  * Rendering loop with requestAnimationFrame
  * Stage 4: Updates FPS counter
+ * Stage 5: Updates charts
  */
 let lastFrameTime = 0;
 const targetFPS = 60;
 const frameInterval = 1000 / targetFPS; // ~16.67ms
+
+// Performance tracking
+let renderTimes: number[] = [];
+const MAX_RENDER_SAMPLES = 100;
 
 function renderLoop(currentTime: number): void {
   const deltaTime = currentTime - lastFrameTime;
@@ -283,8 +342,31 @@ function renderLoop(currentTime: number): void {
   if (deltaTime >= frameInterval) {
     lastFrameTime = currentTime - (deltaTime % frameInterval);
 
+    // Measure render time
+    const renderStartTime = performance.now();
+
+    // Update charts (Stage 5)
+    if (chartManager && isRunning) {
+      chartManager.updateCharts();
+    }
+
     // Update FPS counter
     fpsMonitor.tick();
+
+    // Track render time
+    const renderTime = performance.now() - renderStartTime;
+    renderTimes.push(renderTime);
+    if (renderTimes.length > MAX_RENDER_SAMPLES) {
+      renderTimes.shift();
+    }
+
+    // Log render time every 100 frames (warning if slow)
+    if (fpsMonitor.getFPS() > 0 && receivedCount % 100 === 0 && renderTimes.length > 0) {
+      const avgRenderTime = renderTimes.reduce((a, b) => a + b, 0) / renderTimes.length;
+      if (avgRenderTime > 10) {
+        console.warn(`Average render time: ${avgRenderTime.toFixed(2)}ms (target: <16.67ms)`);
+      }
+    }
   }
 
   requestAnimationFrame(renderLoop);
