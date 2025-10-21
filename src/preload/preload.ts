@@ -20,8 +20,9 @@ contextBridge.exposeInMainWorld('electronAPI', {
         return;
       }
 
-      // Safe access to event.ports with optional chaining
+      // Access event.ports array
       const ports = (event as any).ports;
+      
       if (!ports?.length) {
         console.error('No ports in event or ports array is empty');
         return;
@@ -58,6 +59,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Stop simulation command
   stopSimulation: () => {
     ipcRenderer.send('stop-simulation');
+  },
+
+  // Send renderer performance metrics to main process for logging
+  logRendererMetrics: (metrics: any) => {
+    ipcRenderer.send('log-renderer-metrics', metrics);
   }
 });
 

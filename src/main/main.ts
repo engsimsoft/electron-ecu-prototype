@@ -2,6 +2,8 @@ import { app, BrowserWindow, ipcMain, MessageChannelMain } from 'electron';
 import * as path from 'path';
 import { DataGenerator } from './data-generator';
 import { PrecisionTimer } from './precision-timer';
+import { PerformanceLogger } from './performance-logger';
+import { rendererLogger } from './logger';
 
 let mainWindow: BrowserWindow | null = null;
 
@@ -14,9 +16,8 @@ let simulationRunning = false;
 // MessagePort for IPC communication
 let dataPort: MessagePortMain | null = null;
 
-// Stage 2 test variables (will be removed after Stage 3)
-let testStartTime = 0;
-let lastLogTime = 0;
+// Performance logging
+const performanceLogger = new PerformanceLogger();
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -115,6 +116,9 @@ function startSimulation(): void {
   simulationRunning = true;
   sequenceNumber = 0;
 
+  // Start performance logging
+  performanceLogger.start(1000); // Log metrics every 1 second
+
   timer.start(() => {
     if (!dataPort || !simulationRunning) {
       return;
@@ -122,6 +126,9 @@ function startSimulation(): void {
 
     // Generate packet
     const packet = generator.generatePacket(sequenceNumber);
+
+    // Track packet generation for performance metrics
+    performanceLogger.getPacketTracker().onPacketGenerated();
 
     // Send packet via MessagePort
     dataPort.postMessage(packet);
@@ -147,6 +154,7 @@ function stopSimulation(): void {
   console.log('Stopping simulation...');
   simulationRunning = false;
   timer.stop();
+  performanceLogger.stop(); // Stop performance logging
   console.log(`Total packets sent: ${sequenceNumber}`);
 }
 
@@ -164,6 +172,11 @@ function setupIpcHandlers(): void {
   ipcMain.on('stop-simulation', () => {
     console.log('Received stop-simulation command');
     stopSimulation();
+  });
+
+  // Renderer performance metrics logging
+  ipcMain.on('log-renderer-metrics', (_event, metrics) => {
+    rendererLogger.info(metrics);
   });
 }
 

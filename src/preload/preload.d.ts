@@ -6,6 +6,9 @@ export interface ElectronAPI {
   onDataPacket: (callback: (packet: any) => void) => void;
   startSimulation: () => void;
   stopSimulation: () => void;
+
+  // Stage 6: Performance logging
+  logRendererMetrics: (metrics: any) => void;
 }
 
 declare global {

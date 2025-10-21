@@ -100,29 +100,29 @@ function handleDataPacket(packet: DataPacket): void {
   }
 
   // Add data to charts (Stage 5)
-  if (chartManager && packet.data.length >= 9) {
+  if (chartManager && packet.values.length >= 9) {
     // Calculate timestamp in seconds from start
     const timestampSeconds = (Date.now() - startTime) / 1000;
 
     // Chart 1: Parameters 0-2
     chartManager.addDataPoint(0, timestampSeconds, [
-      packet.data[0],
-      packet.data[1],
-      packet.data[2]
+      packet.values[0],
+      packet.values[1],
+      packet.values[2]
     ]);
 
     // Chart 2: Parameters 3-5
     chartManager.addDataPoint(1, timestampSeconds, [
-      packet.data[3],
-      packet.data[4],
-      packet.data[5]
+      packet.values[3],
+      packet.values[4],
+      packet.values[5]
     ]);
 
     // Chart 3: Parameters 6-8
     chartManager.addDataPoint(2, timestampSeconds, [
-      packet.data[6],
-      packet.data[7],
-      packet.data[8]
+      packet.values[6],
+      packet.values[7],
+      packet.values[8]
     ]);
   }
 
@@ -381,3 +381,44 @@ setInterval(() => {
     updateStats();
   }
 }, 1000);
+
+/**
+ * Performance metrics logging to Main Process
+ * Stage 6: Log renderer metrics every second
+ */
+setInterval(() => {
+  if (isRunning) {
+    // Collect renderer performance metrics
+    const avgLatency = latencies.length > 0
+      ? latencies.reduce((a, b) => a + b, 0) / latencies.length
+      : 0;
+
+    const avgRenderTime = renderTimes.length > 0
+      ? renderTimes.reduce((a, b) => a + b, 0) / renderTimes.length
+      : 0;
+
+    const metrics = {
+      timestamp: Date.now(),
+      process: 'renderer',
+      fps: fpsMonitor.getFPS(),
+      renderTime: parseFloat(avgRenderTime.toFixed(2)),
+      ipc: {
+        latency: parseFloat(avgLatency.toFixed(2)),
+        packetsReceived: receivedCount,
+        packetsDropped: droppedPackets,
+      },
+    };
+
+    // Add memory metrics if available (Chrome only)
+    if (performance.memory) {
+      (metrics as any).memory = {
+        usedJSHeapSize: performance.memory.usedJSHeapSize,
+        totalJSHeapSize: performance.memory.totalJSHeapSize,
+        jsHeapSizeLimit: performance.memory.jsHeapSizeLimit,
+      };
+    }
+
+    // Send metrics to main process for logging
+    window.electronAPI.logRendererMetrics(metrics);
+  }
+}, 1000); // Log every 1 second
