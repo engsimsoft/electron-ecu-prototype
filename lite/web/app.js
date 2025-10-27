@@ -27,10 +27,20 @@ socket.on('simulation-status', (status) => {
   console.log('[Simulation] Status:', status.running ? 'Running' : 'Stopped');
 });
 
-// Тестовая команда - автозапуск симуляции через 2 секунды
-setTimeout(() => {
-  console.log('[Test] Starting simulation...');
-  socket.emit('start-simulation');
-}, 2000);
+// Button handlers
+document.addEventListener('DOMContentLoaded', () => {
+  const startBtn = document.getElementById('startBtn');
+  const stopBtn = document.getElementById('stopBtn');
+
+  startBtn.addEventListener('click', () => {
+    console.log('[UI] Start button clicked');
+    socket.emit('start-simulation');
+  });
+
+  stopBtn.addEventListener('click', () => {
+    console.log('[UI] Stop button clicked');
+    socket.emit('stop-simulation');
+  });
+});
 
 console.log('[App] Initialized');
