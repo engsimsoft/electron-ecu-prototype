@@ -53,21 +53,21 @@ socket.on('ecu-data', (packet) => {
 
   // Add data to charts (9 parameters total, 3 per chart)
   chartManager.addDataPoint(0, timestamp, [
-    packet.data[0],  // Param 0 (red)
-    packet.data[1],  // Param 1 (blue)
-    packet.data[2]   // Param 2 (green)
+    packet.values[0],  // Param 0 (red)
+    packet.values[1],  // Param 1 (blue)
+    packet.values[2]   // Param 2 (green)
   ]);
 
   chartManager.addDataPoint(1, timestamp, [
-    packet.data[3],  // Param 3 (red)
-    packet.data[4],  // Param 4 (blue)
-    packet.data[5]   // Param 5 (green)
+    packet.values[3],  // Param 3 (red)
+    packet.values[4],  // Param 4 (blue)
+    packet.values[5]   // Param 5 (green)
   ]);
 
   chartManager.addDataPoint(2, timestamp, [
-    packet.data[6],  // Param 6 (red)
-    packet.data[7],  // Param 7 (blue)
-    packet.data[8]   // Param 8 (green)
+    packet.values[6],  // Param 6 (red)
+    packet.values[7],  // Param 7 (blue)
+    packet.values[8]   // Param 8 (green)
   ]);
 });
 
