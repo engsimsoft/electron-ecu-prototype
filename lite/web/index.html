@@ -3,36 +3,88 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ECU Tuner Lite v0.1.0</title>
+  <title>ECU Data Prototype</title>
   <link rel="stylesheet" href="styles.css">
+  <!-- uPlot -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.min.css">
 </head>
 <body>
-  <div id="app">
-    <header>
-      <h1>ECU Tuner Lite</h1>
-      <p>Version 0.1.0-lite | Status: <span id="status">Connecting...</span></p>
-      <div class="controls">
-        <button id="startBtn" class="btn btn-primary">Start Simulation</button>
-        <button id="stopBtn" class="btn btn-secondary">Stop Simulation</button>
-      </div>
-    </header>
+  <header>
+    <h1>ECU Data Prototype - 300 Parameters Stress Test</h1>
+    <p class="tech-info">Node.js | Socket.IO | uPlot | Lite Version</p>
+  </header>
 
-    <main>
-      <div id="charts">
+  <main>
+    <section class="control-panel">
+      <h2>Stage 3: MessagePort IPC Communication</h2>
+
+      <div class="controls">
+        <button id="start-btn" class="btn btn-start">Start Simulation</button>
+        <button id="stop-btn" class="btn btn-stop" disabled>Stop Simulation</button>
+        <button id="results-btn" class="btn btn-results">Show Results</button>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <span class="metric-label">Packets Received:</span>
+          <span id="packets-received" class="metric-value">0</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">FPS:</span>
+          <span id="fps-count" class="metric-value fps-indicator">0</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Uptime:</span>
+          <span id="uptime" class="metric-value">00:00</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Dropped Packets:</span>
+          <span id="packets-dropped" class="metric-value">0 (0.00%)</span>
+        </div>
+        <div class="metric">
+          <span class="metric-label">Avg Latency:</span>
+          <span id="avg-latency" class="metric-value">0.00ms</span>
+        </div>
+      </div>
+
+      <div class="info">
+        <p><strong>Test Parameters:</strong></p>
+        <ul>
+          <li>Packet interval: 40ms (25 Hz)</li>
+          <li>Parameters per packet: 300</li>
+          <li>Data format: Float64Array</li>
+          <li>IPC: Socket.IO WebSocket</li>
+        </ul>
+        <p class="note">Open DevTools Console (F12) to see detailed logs</p>
+      </div>
+    </section>
+
+    <section class="charts-section">
+      <h2>Real-Time Charts (9 Parameters)</h2>
+      <div class="charts-grid">
         <div class="chart-wrapper">
           <h3>Chart 1: Parameters 0-2</h3>
-          <div class="chart-container" id="chart1"></div>
+          <div id="chart-1" class="chart-container"></div>
         </div>
         <div class="chart-wrapper">
           <h3>Chart 2: Parameters 3-5</h3>
-          <div class="chart-container" id="chart2"></div>
+          <div id="chart-2" class="chart-container"></div>
         </div>
         <div class="chart-wrapper">
           <h3>Chart 3: Parameters 6-8</h3>
-          <div class="chart-container" id="chart3"></div>
+          <div id="chart-3" class="chart-container"></div>
         </div>
       </div>
-    </main>
+    </section>
+  </main>
+
+  <!-- Results Modal -->
+  <div id="results-modal" class="modal">
+    <div class="modal-content">
+      <span class="close-modal">&times;</span>
+      <h2>Test Results</h2>
+      <pre id="results-text"></pre>
+    </div>
   </div>
 
   <!-- Socket.IO Client -->
@@ -40,7 +92,6 @@
 
   <!-- uPlot -->
   <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.iife.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.min.css">
 
   <!-- Chart dependencies -->
   <script src="circular-buffer.js"></script>

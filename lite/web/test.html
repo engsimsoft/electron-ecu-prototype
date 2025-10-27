@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Test uPlot</title>
+  <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.iife.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.min.css">
+</head>
+<body>
+  <h1>uPlot Test</h1>
+  <div id="chart" style="width: 800px; height: 400px; background: #f0f0f0;"></div>
+
+  <script>
+    console.log('uPlot available:', typeof uPlot);
+    console.log('window.uPlot available:', typeof window.uPlot);
+
+    if (typeof uPlot !== 'undefined') {
+      const data = [
+        [0, 1, 2, 3, 4],
+        [0, 10, 20, 15, 25]
+      ];
+
+      const opts = {
+        width: 800,
+        height: 400,
+        series: [
+          { label: 'Time' },
+          { label: 'Value', stroke: 'red' }
+        ]
+      };
+
+      const chart = new uPlot(opts, data, document.getElementById('chart'));
+      console.log('Chart created successfully!');
+    } else {
+      console.error('uPlot not loaded!');
+    }
+  </script>
+</body>
+</html>

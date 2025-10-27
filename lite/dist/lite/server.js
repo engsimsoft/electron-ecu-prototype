@@ -44,8 +44,15 @@ io.on('connection', (socket) => {
         timer.start(() => {
             // Генерируем пакет данных
             const packet = dataGen.generatePacket(sequenceNumber++);
+            // ВАЖНО: Socket.IO не умеет передавать Float64Array
+            // Конвертируем в обычный массив
+            const packetForWeb = {
+                sequenceNumber: packet.sequenceNumber,
+                timestamp: packet.timestamp,
+                values: Array.from(packet.values) // Float64Array -> Array
+            };
             // Отправляем в браузер через WebSocket
-            io.emit('ecu-data', packet);
+            io.emit('ecu-data', packetForWeb);
             // Логируем каждый 100-й пакет
             if (sequenceNumber % 100 === 0) {
                 console.log(`[DataGen] Sent packet #${sequenceNumber}`);

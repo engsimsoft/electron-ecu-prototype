@@ -36,7 +36,7 @@ window.ChartManager = class ChartManager {
       const mapping = paramMappings[index];
 
       const opts = {
-        width: container.clientWidth,
+        width: container.clientWidth || 400,  // Fallback to 400px if container has no width yet
         height: 300,
         // Performance optimizations
         ms: 1,  // Sub-pixel rendering
@@ -81,6 +81,11 @@ window.ChartManager = class ChartManager {
         [0],  // series 2
         [0]   // series 3
       ];
+
+      if (typeof window.uPlot === 'undefined') {
+        console.error('[ChartManager] window.uPlot is undefined!');
+        return;
+      }
 
       const chart = new window.uPlot(opts, data, container);
       this.charts.push(chart);
