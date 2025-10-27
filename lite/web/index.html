@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECU Tuner Lite v0.1.0</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>ECU Tuner Lite</h1>
+      <p>Version 0.1.0-lite | Status: <span id="status">Connecting...</span></p>
+    </header>
+
+    <main>
+      <div id="charts">
+        <div class="chart-container" id="chart1"></div>
+        <div class="chart-container" id="chart2"></div>
+        <div class="chart-container" id="chart3"></div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Socket.IO Client -->
+  <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+
+  <!-- uPlot -->
+  <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.iife.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.min.css">
+
+  <!-- App logic -->
+  <script src="app.js"></script>
+</body>
+</html>
