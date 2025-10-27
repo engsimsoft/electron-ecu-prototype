@@ -33,11 +33,22 @@ header h1 {
   gap: 20px;
 }
 
-.chart-container {
+.chart-wrapper {
   background: #2a2a2a;
   padding: 15px;
   border-radius: 8px;
   border: 1px solid #3a3a3a;
+}
+
+.chart-wrapper h3 {
+  margin: 0 0 10px 0;
+  font-size: 16px;
+  color: #9ca3af;
+  font-weight: 500;
+}
+
+.chart-container {
+  /* uPlot chart container */
 }
 
 .controls {

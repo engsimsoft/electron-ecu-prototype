@@ -19,9 +19,18 @@
 
     <main>
       <div id="charts">
-        <div class="chart-container" id="chart1"></div>
-        <div class="chart-container" id="chart2"></div>
-        <div class="chart-container" id="chart3"></div>
+        <div class="chart-wrapper">
+          <h3>Chart 1: Parameters 0-2</h3>
+          <div class="chart-container" id="chart1"></div>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Chart 2: Parameters 3-5</h3>
+          <div class="chart-container" id="chart2"></div>
+        </div>
+        <div class="chart-wrapper">
+          <h3>Chart 3: Parameters 6-8</h3>
+          <div class="chart-container" id="chart3"></div>
+        </div>
       </div>
     </main>
   </div>
@@ -32,6 +41,10 @@
   <!-- uPlot -->
   <script src="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.iife.min.js"></script>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/uplot@1.6.30/dist/uPlot.min.css">
+
+  <!-- Chart dependencies -->
+  <script src="circular-buffer.js"></script>
+  <script src="chart-manager.js"></script>
 
   <!-- App logic -->
   <script src="app.js"></script>
