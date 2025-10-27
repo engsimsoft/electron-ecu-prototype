@@ -17,7 +17,8 @@
 - Best practices для AI агентов
 
 **Чего здесь НЕТ:**
-- Технических деталей проекта → см. [roadmap.md](roadmap.md)
+- Технических деталей Full версии → см. [roadmap.md](roadmap.md)
+- Плана разработки Lite версии → см. [roadmap_lite.md](roadmap_lite.md)
 - Требований и KPI → см. [electron_prototype_spec.md](electron_prototype_spec.md)
 - Результатов тестов → см. [TEST_RESULTS.md](TEST_RESULTS.md)
 
@@ -29,11 +30,17 @@
 
 **Цель:** Проверить пригодность Electron как замены Qt/QML для real-time приложений (данные от ЭБУ двигателя).
 
-**Статус:** ✅ v0.5.0 — Этапы 1-6 завершены, все KPI выполнены на macOS
+**Статус:**
+- ✅ **Full версия (Electron):** v0.5.0 — Этапы 1-6 завершены, все KPI выполнены на macOS
+- 🚧 **Lite версия (Node.js + Browser):** v0.1.0-lite — В разработке (0/21 задач)
 
-**Следующие шаги:** Windows тестирование + интеграция COM-порта (выполняет Сергей)
+**Следующие шаги:**
+- **Full версия:** Windows тестирование + интеграция COM-порта (выполняет Сергей)
+- **Lite версия:** Этапы 1-4 - proof of concept для старых Windows систем
 
-**Детали проекта:** см. [electron_prototype_spec.md](electron_prototype_spec.md) и [roadmap.md](roadmap.md)
+**Детали проекта:**
+- Full версия: [electron_prototype_spec.md](electron_prototype_spec.md) и [roadmap.md](roadmap.md)
+- Lite версия: [roadmap_lite.md](roadmap_lite.md) и [ТЗ_для_Claude_Code_-_Lite_версия.md](ТЗ_для_Claude_Code_-_Lite_версия.md)
 
 ---
 
@@ -152,14 +159,17 @@ git push origin windows-development
 | Вопрос | Файл |
 |--------|------|
 | Требования и KPI? | [electron_prototype_spec.md](electron_prototype_spec.md) |
-| План и технологии? | [roadmap.md](roadmap.md) |
+| План Full версии? | [roadmap.md](roadmap.md) |
+| План Lite версии? | [roadmap_lite.md](roadmap_lite.md) |
+| ТЗ Lite версии? | [ТЗ_для_Claude_Code_-_Lite_версия.md](ТЗ_для_Claude_Code_-_Lite_версия.md) |
 | История изменений? | [CHANGELOG.md](CHANGELOG.md) |
 | Результаты тестов? | [TEST_RESULTS.md](TEST_RESULTS.md) |
 | Правила документации? | [DOCUMENTATION_GUIDE.md](DOCUMENTATION_GUIDE.md) |
 | Быстрый старт? | [README.md](README.md) |
 | Git workflow? | Этот файл, секция "Git Workflow" |
-| Архитектура проекта? | [roadmap.md](roadmap.md) → Этапы 1-3 |
-| Технологии? | [roadmap.md](roadmap.md) → начало документа |
+| Архитектура Full версии? | [roadmap.md](roadmap.md) → Этапы 1-3 |
+| Архитектура Lite версии? | [roadmap_lite.md](roadmap_lite.md) → Технические детали |
+| Технологии? | [roadmap.md](roadmap.md) и [roadmap_lite.md](roadmap_lite.md) |
 
 ---
 
