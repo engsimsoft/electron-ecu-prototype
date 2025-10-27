@@ -92,7 +92,7 @@ typings/
 out/
 
 # Project-specific
-dist/
+/dist/
 *_backup/
 electron_prototype_backup/
 

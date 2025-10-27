@@ -1,8 +1,8 @@
 # Dependencies
 node_modules/
 
-# Build output
-dist/
+# Build output (commented - we commit dist/ for easy deployment)
+# dist/
 
 # Logs
 *.log
