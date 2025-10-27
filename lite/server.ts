@@ -14,6 +14,13 @@ const server = http.createServer(app);
 const io = new SocketIO(server);
 const PORT = 3000;
 
+// Инициализация генератора данных
+const dataGen = new DataGenerator(300); // 300 параметров
+let sequenceNumber = 0;
+
+// Precision timer 40ms (25Hz)
+const timer = new PrecisionTimer(40);
+
 // Раздаём статические файлы из web/
 app.use(express.static(path.join(__dirname, '../../web')));
 
@@ -33,6 +40,34 @@ server.listen(PORT, async () => {
 // WebSocket connection handler
 io.on('connection', (socket) => {
   console.log('[WebSocket] Client connected');
+
+  // Start simulation command
+  socket.on('start-simulation', () => {
+    console.log('[Server] Starting simulation...');
+    sequenceNumber = 0;
+
+    timer.start(() => {
+      // Генерируем пакет данных
+      const packet: DataPacket = dataGen.generatePacket(sequenceNumber++);
+
+      // Отправляем в браузер через WebSocket
+      io.emit('ecu-data', packet);
+
+      // Логируем каждый 100-й пакет
+      if (sequenceNumber % 100 === 0) {
+        console.log(`[DataGen] Sent packet #${sequenceNumber}`);
+      }
+    });
+
+    socket.emit('simulation-status', { running: true });
+  });
+
+  // Stop simulation command
+  socket.on('stop-simulation', () => {
+    console.log('[Server] Stopping simulation...');
+    timer.stop();
+    socket.emit('simulation-status', { running: false });
+  });
 
   socket.on('disconnect', () => {
     console.log('[WebSocket] Client disconnected');

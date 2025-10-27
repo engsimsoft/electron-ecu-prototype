@@ -8,10 +8,18 @@ const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
 const open_1 = __importDefault(require("open"));
 const path_1 = __importDefault(require("path"));
+// Import from Full version
+const data_generator_1 = require("../src/main/data-generator");
+const precision_timer_1 = require("../src/main/precision-timer");
 const app = (0, express_1.default)();
 const server = http_1.default.createServer(app);
 const io = new socket_io_1.Server(server);
 const PORT = 3000;
+// Инициализация генератора данных
+const dataGen = new data_generator_1.DataGenerator(300); // 300 параметров
+let sequenceNumber = 0;
+// Precision timer 40ms (25Hz)
+const timer = new precision_timer_1.PrecisionTimer(40);
 // Раздаём статические файлы из web/
 app.use(express_1.default.static(path_1.default.join(__dirname, '../../web')));
 // Запускаем сервер
@@ -29,6 +37,28 @@ server.listen(PORT, async () => {
 // WebSocket connection handler
 io.on('connection', (socket) => {
     console.log('[WebSocket] Client connected');
+    // Start simulation command
+    socket.on('start-simulation', () => {
+        console.log('[Server] Starting simulation...');
+        sequenceNumber = 0;
+        timer.start(() => {
+            // Генерируем пакет данных
+            const packet = dataGen.generatePacket(sequenceNumber++);
+            // Отправляем в браузер через WebSocket
+            io.emit('ecu-data', packet);
+            // Логируем каждый 100-й пакет
+            if (sequenceNumber % 100 === 0) {
+                console.log(`[DataGen] Sent packet #${sequenceNumber}`);
+            }
+        });
+        socket.emit('simulation-status', { running: true });
+    });
+    // Stop simulation command
+    socket.on('stop-simulation', () => {
+        console.log('[Server] Stopping simulation...');
+        timer.stop();
+        socket.emit('simulation-status', { running: false });
+    });
     socket.on('disconnect', () => {
         console.log('[WebSocket] Client disconnected');
     });
