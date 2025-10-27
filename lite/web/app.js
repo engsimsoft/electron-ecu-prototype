@@ -33,8 +33,20 @@ socket.on('disconnect', () => {
 });
 
 // Получение данных ЭБУ
+let packetCount = 0;
 socket.on('ecu-data', (packet) => {
-  if (!chartManager) return;
+  packetCount++;
+
+  if (packetCount % 50 === 0) {
+    console.log(`[Data] Received ${packetCount} packets, chartManager=${chartManager ? 'OK' : 'NULL'}`);
+  }
+
+  if (!chartManager) {
+    if (packetCount === 1) {
+      console.error('[Data] ChartManager is NULL - cannot add data!');
+    }
+    return;
+  }
 
   // Calculate relative timestamp in seconds
   const timestamp = (Date.now() - startTime) / 1000;
@@ -73,19 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('chart3')
   ];
 
-  // Initialize ChartManager
-  try {
-    chartManager = new ChartManager(containers);
-    console.log('[Charts] ChartManager initialized with 3 charts');
-
-    // Start animation loop for 60 FPS updates
-    updateChartsLoop();
-    console.log('[Charts] Animation loop started @ 60 FPS');
-  } catch (error) {
-    console.error('[Charts] Failed to initialize ChartManager:', error);
-  }
-
-  // Button handlers
+  // Button handlers (initialize first, before charts)
   const startBtn = document.getElementById('startBtn');
   const stopBtn = document.getElementById('stopBtn');
 
@@ -102,6 +102,19 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log('[UI] Stop button clicked');
     socket.emit('stop-simulation');
   });
+
+  // Initialize ChartManager after buttons
+  try {
+    chartManager = new window.ChartManager(containers);
+    console.log('[Charts] ChartManager initialized with 3 charts');
+
+    // Start animation loop for 60 FPS updates
+    updateChartsLoop();
+    console.log('[Charts] Animation loop started @ 60 FPS');
+  } catch (error) {
+    console.error('[Charts] Failed to initialize ChartManager:', error);
+    console.error('[Charts] Error details:', error.message);
+  }
 
   // Handle window resize
   window.addEventListener('resize', () => {
