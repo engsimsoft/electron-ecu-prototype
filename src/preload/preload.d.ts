@@ -9,6 +9,9 @@ export interface ElectronAPI {
 
   // Stage 6: Performance logging
   logRendererMetrics: (metrics: any) => void;
+
+  // Show test results
+  showResults: () => void;
 }
 
 declare global {

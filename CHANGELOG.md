@@ -13,6 +13,48 @@
 
 ---
 
+## [0.5.1] - 2025-10-27
+
+### Added
+- **Show Results кнопка** - UI кнопка для просмотра результатов тестов
+  - Кнопка "Show Results" в интерфейсе приложения
+  - Автоматический анализ логов при нажатии кнопки
+  - Отображение результатов в отдельном окне с красивым дизайном
+  - Метрики: CPU (avg, min, max), Memory, FPS (avg, min, max), Latency
+  - Тёмная тема для окна результатов (VS Code style)
+
+### Changed
+- **index.html**: Добавлена кнопка "Show Results" в панель управления
+- **renderer.ts**: Добавлена функция `showResults()` для вызова IPC
+- **preload.ts**: Добавлен метод `showResults()` в electronAPI
+- **preload.d.ts**: Обновлён интерфейс ElectronAPI
+- **main.ts**: Добавлена функция `showResultsWindow()` с анализом логов
+- **main.ts**: Добавлен IPC handler `show-results`
+- **styles.css**: Добавлены стили для кнопки `.btn-results` (синий цвет)
+
+### Technical Details
+- Анализ логов выполняется в main process при нажатии кнопки
+- Парсинг NDJSON логов из `logs/performance-main.log` и `logs/performance-renderer.log`
+- Вычисление статистики: Average, Min, Max для всех метрик
+- Результаты отображаются в новом BrowserWindow с HTML/CSS
+- Размер окна результатов: 800x600px
+
+### Files Changed
+- `index.html` - добавлена кнопка Show Results
+- `src/renderer/renderer.ts` - функция showResults()
+- `src/preload/preload.ts` - IPC метод showResults
+- `src/preload/preload.d.ts` - обновлён тип ElectronAPI
+- `src/main/main.ts` - функция showResultsWindow() и IPC handler
+- `src/renderer/styles.css` - стили для кнопки
+
+### User Experience
+- Простой способ просмотра результатов без терминала
+- Не требуется запуск `node scripts/analyze-logs.js`
+- Удобно для непрограммистов
+- Результаты в читаемом виде в отдельном окне
+
+---
+
 ## [0.5.0] - 2025-01-21
 
 ### Added

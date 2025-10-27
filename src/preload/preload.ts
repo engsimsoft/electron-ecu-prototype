@@ -64,6 +64,11 @@ contextBridge.exposeInMainWorld('electronAPI', {
   // Send renderer performance metrics to main process for logging
   logRendererMetrics: (metrics: any) => {
     ipcRenderer.send('log-renderer-metrics', metrics);
+  },
+
+  // Show test results window
+  showResults: () => {
+    ipcRenderer.send('show-results');
   }
 });
 

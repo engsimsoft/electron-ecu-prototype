@@ -164,6 +164,20 @@ main {
   transform: translateY(0);
 }
 
+.btn-results {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.btn-results:hover {
+  background-color: #2563eb;
+  transform: translateY(-1px);
+}
+
+.btn-results:active {
+  transform: translateY(0);
+}
+
 .metrics {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

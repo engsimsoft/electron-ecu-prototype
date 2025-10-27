@@ -289,12 +289,21 @@ window.electronAPI.onDataPacket((packet: DataPacket) => {
   handleDataPacket(packet);
 });
 
+/**
+ * Show test results
+ */
+function showResults(): void {
+  console.log('Showing test results...');
+  window.electronAPI.showResults();
+}
+
 // Setup button event listeners
 document.addEventListener('DOMContentLoaded', () => {
   console.log('DOM loaded, setting up UI...');
 
   const startBtn = document.getElementById('start-btn');
   const stopBtn = document.getElementById('stop-btn');
+  const resultsBtn = document.getElementById('results-btn');
 
   if (startBtn) {
     startBtn.addEventListener('click', startSimulation);
@@ -302,6 +311,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
   if (stopBtn) {
     stopBtn.addEventListener('click', stopSimulation);
+  }
+
+  if (resultsBtn) {
+    resultsBtn.addEventListener('click', showResults);
   }
 
   // Initialize button states

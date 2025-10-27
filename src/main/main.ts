@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, MessageChannelMain } from 'electron';
 import * as path from 'path';
+import * as fs from 'fs';
 import { DataGenerator } from './data-generator';
 import { PrecisionTimer } from './precision-timer';
 import { PerformanceLogger } from './performance-logger';
@@ -159,6 +160,103 @@ function stopSimulation(): void {
 }
 
 /**
+ * Analyze performance logs and show results window
+ */
+function showResultsWindow(): void {
+  console.log('Creating results window...');
+
+  // Create results window
+  const resultsWindow = new BrowserWindow({
+    width: 800,
+    height: 600,
+    title: 'Test Results',
+    webPreferences: {
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+
+  // Analyze logs
+  const logsDir = path.join(process.cwd(), 'logs');
+  const mainLogPath = path.join(logsDir, 'performance-main.log');
+  const rendererLogPath = path.join(logsDir, 'performance-renderer.log');
+
+  let resultsHtml = '<html><head><title>Test Results</title><style>';
+  resultsHtml += 'body { font-family: Arial, sans-serif; padding: 20px; background: #1e1e1e; color: #d4d4d4; }';
+  resultsHtml += 'h1 { color: #4ec9b0; }';
+  resultsHtml += 'h2 { color: #569cd6; margin-top: 20px; }';
+  resultsHtml += '.metric { margin: 10px 0; padding: 10px; background: #2d2d2d; border-left: 3px solid #4ec9b0; }';
+  resultsHtml += '.label { font-weight: bold; color: #dcdcaa; }';
+  resultsHtml += '.value { color: #ce9178; }';
+  resultsHtml += '.error { color: #f48771; }';
+  resultsHtml += '</style></head><body>';
+  resultsHtml += '<h1>📊 Test Results</h1>';
+
+  try {
+    // Analyze main process logs
+    if (fs.existsSync(mainLogPath)) {
+      const mainContent = fs.readFileSync(mainLogPath, 'utf-8');
+      const mainLines = mainContent.trim().split('\n');
+      const cpuValues: number[] = [];
+      const memoryValues: number[] = [];
+
+      mainLines.forEach(line => {
+        try {
+          const entry = JSON.parse(line);
+          if (entry.cpu) cpuValues.push(entry.cpu);
+          if (entry.memory?.rss) memoryValues.push(entry.memory.rss / 1024 / 1024); // Convert to MB
+        } catch (e) { /* skip invalid lines */ }
+      });
+
+      if (cpuValues.length > 0) {
+        resultsHtml += '<h2>Main Process</h2>';
+        resultsHtml += `<div class="metric"><span class="label">CPU Average:</span> <span class="value">${(cpuValues.reduce((a, b) => a + b, 0) / cpuValues.length).toFixed(2)}%</span></div>`;
+        resultsHtml += `<div class="metric"><span class="label">CPU Min:</span> <span class="value">${Math.min(...cpuValues).toFixed(2)}%</span></div>`;
+        resultsHtml += `<div class="metric"><span class="label">CPU Max:</span> <span class="value">${Math.max(...cpuValues).toFixed(2)}%</span></div>`;
+
+        if (memoryValues.length > 0) {
+          resultsHtml += `<div class="metric"><span class="label">Memory Average:</span> <span class="value">${(memoryValues.reduce((a, b) => a + b, 0) / memoryValues.length).toFixed(2)} MB</span></div>`;
+        }
+      }
+    }
+
+    // Analyze renderer process logs
+    if (fs.existsSync(rendererLogPath)) {
+      const rendererContent = fs.readFileSync(rendererLogPath, 'utf-8');
+      const rendererLines = rendererContent.trim().split('\n');
+      const fpsValues: number[] = [];
+      const latencyValues: number[] = [];
+
+      rendererLines.forEach(line => {
+        try {
+          const entry = JSON.parse(line);
+          if (entry.fps) fpsValues.push(entry.fps);
+          if (entry.ipc?.latency) latencyValues.push(entry.ipc.latency);
+        } catch (e) { /* skip invalid lines */ }
+      });
+
+      if (fpsValues.length > 0) {
+        resultsHtml += '<h2>Renderer Process</h2>';
+        resultsHtml += `<div class="metric"><span class="label">FPS Average:</span> <span class="value">${(fpsValues.reduce((a, b) => a + b, 0) / fpsValues.length).toFixed(2)}</span></div>`;
+        resultsHtml += `<div class="metric"><span class="label">FPS Min:</span> <span class="value">${Math.min(...fpsValues).toFixed(2)}</span></div>`;
+        resultsHtml += `<div class="metric"><span class="label">FPS Max:</span> <span class="value">${Math.max(...fpsValues).toFixed(2)}</span></div>`;
+
+        if (latencyValues.length > 0) {
+          resultsHtml += `<div class="metric"><span class="label">Latency Average:</span> <span class="value">${(latencyValues.reduce((a, b) => a + b, 0) / latencyValues.length).toFixed(2)} ms</span></div>`;
+        }
+      }
+    }
+  } catch (error) {
+    resultsHtml += `<div class="error">Error analyzing logs: ${error}</div>`;
+  }
+
+  resultsHtml += '</body></html>';
+
+  // Load HTML content
+  resultsWindow.loadURL(`data:text/html;charset=utf-8,${encodeURIComponent(resultsHtml)}`);
+}
+
+/**
  * Setup IPC handlers
  */
 function setupIpcHandlers(): void {
@@ -177,6 +275,12 @@ function setupIpcHandlers(): void {
   // Renderer performance metrics logging
   ipcMain.on('log-renderer-metrics', (_event, metrics) => {
     rendererLogger.info(metrics);
+  });
+
+  // Show results window
+  ipcMain.on('show-results', () => {
+    console.log('Received show-results command');
+    showResultsWindow();
   });
 }
 
