@@ -2,7 +2,7 @@
  * CircularBuffer - Generic circular buffer implementation
  * Adapted from Full version for Lite (JavaScript)
  */
-class CircularBuffer {
+window.CircularBuffer = class CircularBuffer {
   constructor(capacity) {
     this.capacity = capacity;
     this.buffer = new Array(capacity);
@@ -59,7 +59,7 @@ class CircularBuffer {
  * TypedCircularBuffer - Optimized version using Float64Array
  * For better performance with numeric data
  */
-class TypedCircularBuffer {
+window.TypedCircularBuffer = class TypedCircularBuffer {
   constructor(capacity) {
     this.capacity = capacity;
     this.buffer = new Float64Array(capacity);

@@ -2,7 +2,7 @@
  * ChartManager - Manages 3 uPlot charts for real-time ECU data visualization
  * Adapted from Full version for Lite (JavaScript)
  */
-class ChartManager {
+window.ChartManager = class ChartManager {
   constructor(containers) {
     if (containers.length !== 3) {
       throw new Error('ChartManager requires exactly 3 containers');
@@ -15,11 +15,11 @@ class ChartManager {
     // Initialize data buffers for each chart
     for (let i = 0; i < 3; i++) {
       this.chartData.push({
-        timestamps: new TypedCircularBuffer(this.bufferCapacity),
+        timestamps: new window.TypedCircularBuffer(this.bufferCapacity),
         series: [
-          new TypedCircularBuffer(this.bufferCapacity),
-          new TypedCircularBuffer(this.bufferCapacity),
-          new TypedCircularBuffer(this.bufferCapacity)
+          new window.TypedCircularBuffer(this.bufferCapacity),
+          new window.TypedCircularBuffer(this.bufferCapacity),
+          new window.TypedCircularBuffer(this.bufferCapacity)
         ]
       });
     }
@@ -82,7 +82,7 @@ class ChartManager {
         [0]   // series 3
       ];
 
-      const chart = new uPlot(opts, data, container);
+      const chart = new window.uPlot(opts, data, container);
       this.charts.push(chart);
     });
   }
