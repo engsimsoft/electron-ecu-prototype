@@ -2,15 +2,15 @@
   "name": "ecu-tuner-lite",
   "version": "0.1.0-lite",
   "description": "ECU Tuner Lite - Node.js server version for Windows 7+",
-  "main": "dist/server.js",
-  "bin": "dist/server.js",
+  "main": "dist/lite/server.js",
+  "bin": "dist/lite/server.js",
   "engines": {
     "node": "16.x"
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "tsc && node dist/server.js"
+    "start": "node dist/lite/server.js",
+    "dev": "tsc && node dist/lite/server.js"
   },
   "keywords": [
     "ecu",

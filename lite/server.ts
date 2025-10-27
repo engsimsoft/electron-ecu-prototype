@@ -4,13 +4,18 @@ import { Server as SocketIO } from 'socket.io';
 import open from 'open';
 import path from 'path';
 
+// Import from Full version
+import { DataGenerator } from '../src/main/data-generator';
+import { PrecisionTimer } from '../src/main/precision-timer';
+import { DataPacket } from '../src/main/types';
+
 const app = express();
 const server = http.createServer(app);
 const io = new SocketIO(server);
 const PORT = 3000;
 
 // Раздаём статические файлы из web/
-app.use(express.static(path.join(__dirname, '../web')));
+app.use(express.static(path.join(__dirname, '../../web')));
 
 // Запускаем сервер
 server.listen(PORT, async () => {
