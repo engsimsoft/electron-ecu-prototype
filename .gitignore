@@ -120,3 +120,8 @@ logs/
 # Test outputs
 test-results/
 screenshots/
+
+# Lite version build artifacts
+ECU_Tuner_Lite.exe
+/web/
+*.exe

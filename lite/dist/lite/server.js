@@ -21,7 +21,13 @@ let sequenceNumber = 0;
 // Precision timer 40ms (25Hz)
 const timer = new precision_timer_1.PrecisionTimer(40);
 // Раздаём статические файлы из web/
-app.use(express_1.default.static(path_1.default.join(__dirname, '../../web')));
+// Для pkg: web/ будет рядом с .exe файлом
+// @ts-ignore - pkg добавляет process.pkg в runtime
+const webPath = process.pkg
+    ? path_1.default.join(path_1.default.dirname(process.execPath), 'web')
+    : path_1.default.join(__dirname, '../../web');
+console.log(`[Server] Static files path: ${webPath}`);
+app.use(express_1.default.static(webPath));
 // Запускаем сервер
 server.listen(PORT, async () => {
     console.log(`[Server] Running at http://localhost:${PORT}`);

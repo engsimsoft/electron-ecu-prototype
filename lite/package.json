@@ -10,7 +10,8 @@
   "scripts": {
     "build": "tsc",
     "start": "node dist/lite/server.js",
-    "dev": "tsc && node dist/lite/server.js"
+    "dev": "tsc && node dist/lite/server.js",
+    "package": "npm run build && pkg dist/lite/server.js --targets node16-win-x64 --output ../ECU_Tuner_Lite.exe"
   },
   "keywords": [
     "ecu",
@@ -22,6 +23,14 @@
   ],
   "author": "",
   "license": "MIT",
+  "pkg": {
+    "assets": [
+      "../web/**/*"
+    ],
+    "targets": [
+      "node16-win-x64"
+    ]
+  },
   "dependencies": {
     "express": "^4.18.2",
     "socket.io": "^4.6.0",
